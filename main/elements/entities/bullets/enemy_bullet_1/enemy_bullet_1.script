@@ -1,0 +1,92 @@
+local callback_url = require "modules/callbacks.bullet_1"--AKA bullet_1_callbacks
+
+go.property("direction", vmath.vector3(0,0,0))
+go.property("speed", 0)
+go.property("speed_initial", 0)
+go.property("velocity", vmath.vector3(0,0,0))
+go.property("lifespan", 0)
+go.property("lifespan_initial", 0)
+go.property("callback_id", 0)
+go.property("reflected", false)
+go.property("type", 1)
+go.property("wallHit",false)
+go.property("playerHit",false)
+go.property("weaponHit",false)
+go.property("prevPos", vmath.vector3(0))
+go.property("attackMousePos", vmath.vector3(0))
+
+function init(self)
+	self.prevPos = go.get(".", "position")
+	self.lifespan_initial = self.lifespan
+	self.speed_initial = self.speed
+	self.velocity = self.direction * self.speed
+end
+
+
+function update(self, dt)
+	local selfPos = go.get_position(".")
+	
+	
+	if self.wallHit then
+		self.lifespan = 0
+	elseif self.playerHit then
+		self.lifespan = 0
+	elseif self.weaponHit then
+		msg.post("/hero_collection/weapon#script","reflected")
+		self.direction = vmath.normalize(vmath.vector3(_AttackMousePos.x + _CamPos.x - _WeaponPos.x, _AttackMousePos.y + _CamPos.y - _WeaponPos.y, 0))
+		self.velocity = self.direction * self.speed
+	end
+	
+	self.prevPos = go.get(".", "position")
+	self.lifespan = self.lifespan - dt
+	if self.lifespan <= 0 then
+		if bullet_1_callbacks[self.callback_id] then
+			bullet_1_callbacks[self.callback_id]()
+		end
+		go.delete()
+	else
+		go.set(".", "position", selfPos + self.velocity * dt)
+	end
+	physics.ray_cast( go.get(".", "position"), go.get(".", "position") + self.velocity * dt, {hash("hero"), hash("walls")}, 1)
+	--msg.post("@render:", "draw_line", {start_point = go.get(".", "position"), end_point = go.get(".", "position") + self.velocity * dt, color = vmath.vector4(0,1,0,1)})
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("contact_point_response") then
+		if message.group == hash('walls') then
+			self.wallHit = true
+		elseif message.group == hash('hero') then
+			self.playerHit = true
+		elseif message.group == hash('weapon') then
+			self.weaponHit = true
+		end
+	elseif message_id == hash("ray_cast_response") then
+		if message.group == hash("hero") then
+			self.playerHit = true
+		elseif message.group == hash("wall") then
+			self.wallHit = true
+		elseif message.group == hash('weapon') then
+			self.weaponHit = true
+		end
+	elseif message_id == hash('weaponReflect') then
+		if message.speed then
+			self.speed  = message.speed
+			self.speed_initial = self.speed
+		end
+		if message.speedMultiplier then
+			self.speed = self.speed_initial * message.speedMultiplier 
+			self.speed_initial = self.speed
+		end
+		if message.lifespan then
+			self.lifespan = message.lifespan
+			self.lifespan_initial = self.lifespan
+		end
+		if message.lifespanMultiplier then
+			self.lifespan = self.lifespan_initial * message.lifespanMultiplier
+			self.lifespan_initial = self.lifespan
+		end
+		if message.callback_id then
+			self.callback_id = message.callback_id	
+		end
+	end
+end

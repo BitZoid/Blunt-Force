@@ -1,0 +1,225 @@
+ --AKA enemyProto
+require "modules.bullet_prototype" --AKA bulletProto
+go.property("waitB", 0)
+go.property("waitS", 0)
+
+function init(self)
+	self.SPEED = 100 --movement speed
+	self.RANGE = 400 --player tracking range
+
+	self.velocity = vmath.vector3(0)
+	self.velocityGoal = vmath.vector3(0)
+	self.currentBehaviorCompleted = true
+	self.currentDirection = vmath.vector3(0,0,0)
+	self.curAnim = 2
+	self.velocityInitial = vmath.vector3(0)
+	self.duration = 0
+	self.previousDirection = vmath.vector3(0)
+	self.collisions = {}
+	self.behaviorList = {}
+	self.t = 0
+	self.playerVisible = false
+	self.tracking = false
+	self.shooting = false
+
+	self.idleBehaviors = {
+		{
+			direction = 1,
+			speed = self.SPEED,
+			minSpeed = 0,
+			duration = math.random(1,2),
+			completionDelay = math.random(5,10)
+		},
+		{
+			direction = 0,
+			speed = self.SPEED * 1.2,
+			minSpeed = self.SPEED * .2,
+			duration = enemyProto.randomFloat(1, 5)/2,
+			completionDelay = enemyProto.randomFloat(2, 3)
+		},
+		{
+			direction = 0,
+			speed = self.SPEED * .8,
+			minSpeed = self.SPEED * .3,
+			duration = enemyProto.randomFloat(1, 5),
+			completionDelay = enemyProto.randomFloat(0, 4)
+		},
+		{
+			direction = 0,
+			speed = 0,
+			minSpeed = 0,
+			duration = enemyProto.randomFloat(3, 5),
+			completionDelay = 0
+		},
+	}
+
+	self.trackingBehaviors = {
+		{
+			direction = 2,
+			speed = self.SPEED,
+			minSpeed = self.SPEED,
+			duration = math.random(1,2),
+			completionDelay = 0
+		}
+	}
+end
+
+function final(self)
+end
+
+
+function update(self, dt)
+	local playerPos = go.get("/hero_collection/hero", "position") --gets the player's position
+	local selfPos = go.get(".", "position") --stores the current position
+
+
+	if self.playerVisible and enemyProto.targetInRange(selfPos, playerPos, self.RANGE) then
+		
+		if not self.tracking or self.behaviorList[1] == nil then
+			self.tracking = true
+			self.behaviorList = {}
+			table.insert(self.behaviorList, self.trackingBehaviors[1])
+		end
+	elseif self.tracking or self.behaviorList[1] == nil then
+		self.tracking = false
+		self.behaviorList = {}
+		table.insert(self.behaviorList, self.idleBehaviors[1])
+		table.insert(self.behaviorList, self.idleBehaviors[math.random(1,4)])
+	end
+
+	if self.currentBehaviorCompleted == true then
+		self.t = 0
+		self.currentBehaviorCompleted = false
+		self.velocityInitial = self.velocity
+		self.duration = self.behaviorList[1].duration / 2
+		if self.behaviorList[1].direction == 0 then
+			self.currentDirection = enemyProto.derivativeDirection(self.previousDirection, -45, 45)
+		elseif self.behaviorList[1].direction == 1 then
+			self.currentDirection = enemyProto.randomDirection()
+		elseif self.behaviorList[1].direction == 2 then
+			self.currentDirection = enemyProto.target(playerPos)
+		end
+		self.velocityGoal = self.currentDirection * self.behaviorList[1].speed
+		enemyProto.delay(self.behaviorList[1].duration, "waitB", function()
+			self.t = 0
+			self.duration = self.behaviorList[1].completionDelay / 2
+			--self.velocityGoal = vmath.vector3(0)
+			self.velocityGoal = enemyProto.derivativeDirection(self.currentDirection, -5, 5) * self.behaviorList[1].minSpeed
+			self.velocityInitial = self.velocity
+			enemyProto.delay(self.behaviorList[1].completionDelay, "waitB", function()
+					self.currentBehaviorCompleted = true
+					self.previousDirection = self.currentDirection
+					table.remove(self.behaviorList, 1)
+				end
+			)
+		end
+		)
+	end
+
+	--counter for velocity lerping
+	--increments by 1 / (the action duration) every second
+	self.t = self.t + dt / self.duration
+	if self.t > 1 then
+		self.t = 1
+	end
+
+	enemyProto.rayCast(playerPos)
+
+	handleCollisions(self)
+	handleAnimations(self)
+
+	self.velocity = vmath.lerp(self.t, self.velocityInitial, self.velocityGoal)
+	go.set(".", "position", selfPos + self.velocity * dt)
+	enemyProto.rayCast(playerPos)
+
+	if not self.shooting and self.tracking then
+		self.shooting = true
+		enemyProto.delay(math.random()/10, "waitS", function()
+				bulletProto.test = 100
+				bulletProto.newBullet(bulletProto.bulletTypes.bullet_1, 
+					go.get(".", "position"), 
+					enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), -30, 30), 
+					200 + enemyProto.randomFloat(-20, 20), .5, 1,
+					function()
+						--[[print("callback_1")
+						 bulletProto.newBullet(bulletProto.bulletTypes.bullet_1,  
+							go.get(".", "position"), 
+							enemyProto.derivativeDirection(enemyProto.randomDirection(), -100, 100),
+							200 + enemyProto.randomFloat(-20, 20), 1, 2,
+							function()
+								print("callback_2")
+							end
+							)--]]
+				end
+				)
+			self.shooting = false
+		end
+		)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("contact_point_response") then
+		if message.group == hash("walls") then
+			table.insert(self.collisions, {["normal"] = message.normal, ["distance"] = message.distance})
+		end
+	elseif message_id == hash("ray_cast_response") then
+		if message.group == hash("hero") then
+			self.playerVisible = true
+		else
+			self.playerVisible = false
+		end
+	end
+end
+
+--loops through the collisions array, adjusting the enemy's position and direction of movement so that it bounces off at an equal angle
+function handleCollisions(self)
+	local selfPos = go.get(".", "position")
+	for i = 1, #self.collisions do
+		local collisionNorm = self.collisions[i]["normal"]
+		local collisionDist = self.collisions[i]["distance"]
+
+		if collisionDist > 0 then
+			local newpos = selfPos + collisionNorm * collisionDist
+			go.set_position(newpos)
+
+			if collisionNorm.x < 0 then
+				self.velocity.x = -math.abs(self.velocity.x)
+				self.velocityGoal.x = -math.abs(self.velocityGoal.x)
+				self.velocityInitial.x = -math.abs(self.velocityInitial.x)
+			elseif collisionNorm.x > 0 then
+				self.velocity.x = math.abs(self.velocity.x)
+				self.velocityGoal.x = math.abs(self.velocityGoal.x)
+				self.velocityInitial.x = math.abs(self.velocityInitial.x)
+			end
+
+			if collisionNorm.y < 0 then
+				self.velocity.y = -math.abs(self.velocity.y)
+				self.velocityGoal.y = -math.abs(self.velocityGoal.y)
+				self.velocityInitial.y = -math.abs(self.velocityInitial.y)
+			elseif collisionNorm.y > 0 then
+				self.velocity.y = math.abs(self.velocity.y)
+				self.velocityGoal.y = math.abs(self.velocityGoal.y)
+				self.velocityInitial.y = math.abs(self.velocityInitial.y)
+			end
+		end
+	end
+	--clears the collision array
+	self.collisions = {}
+end
+
+--handles flipping the sprite and determining which animation to play
+function handleAnimations(self)
+	enemyProto.flip(self.velocity)
+	if math.abs(self.velocity.x) + math.abs(self.velocity.y) > 1 then
+		if self.curAnim ~= 1 then
+			msg.post("#sprite", "play_animation", {id = hash("run")})
+			self.curAnim = 1
+		end
+	else
+		if self.curAnim ~= 2 then
+			msg.post("#sprite", "play_animation", {id = hash("idle")})
+			self.curAnim = 2
+		end
+	end
+end

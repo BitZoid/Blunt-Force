@@ -1,0 +1,34 @@
+[project]
+title = Shovel Prototype
+version = 0.2
+compress_archive = 1
+dependencies = https://github.com/subsoap/defos/archive/master.zip
+
+[bootstrap]
+main_collection = /main/main.collectionc
+render = /main/render/custom.renderc
+
+[input]
+game_binding = /input/game.input_bindingc
+
+[display]
+width = 1080
+height = 720
+high_dpi = 1
+variable_dt = 1
+update_frequency = 60
+samples = 0
+fullscreen = 0
+
+[physics]
+scale = 0.02
+debug = 0
+debug_alpha = .9
+
+[script]
+shared_state = 1
+
+[graphics]
+default_texture_mag_filter = nearest
+default_texture_min_filter = nearest
+

@@ -1,0 +1,145 @@
+--[[ Locals ]]--
+local velocity = vmath.vector3(0,0,0)
+local velocityGoal = vmath.vector3(0,0,0)
+local normSpeed = 0
+local collisions = {}
+local curAnim = 1
+local angleQuat = 0
+local angleRad = 0
+local swingDist = 50
+local collision_hash = hash("contact_point_response")
+
+--[[ Individual Properties ]]--
+go.property("attackDelay", 0)
+go.property("delayMax", 100)
+go.property("speed", 250)
+go.property("velocityDelta", .2)
+
+
+function init(self)
+	normSpeed = self.speed * math.sqrt(2) / 2  --Speed when moving diagonally
+end
+
+function update(self, dt)
+	if math.abs(velocity.x) + math.abs(velocity.y) > 20 then
+		if curAnim ~= 1 then
+			msg.post("#sprite", "play_animation", {id = hash("run_left")})
+			curAnim = 1
+		end
+	else
+		if curAnim ~= 2 then
+			msg.post("#sprite", "play_animation", {id = hash("idle_left")})
+			curAnim = 2	
+		end
+	end
+	sprite.set_hflip("#sprite", not _PlayerFacingLeft)
+	
+	
+
+	-------------------------------------
+	--Updating velocityGoal to reflect player input--  Should this come after recieving input for this frame?
+	if _ControlAxisVert == 0 and _ControlAxisHor == 0 then velocityGoal = vmath.vector3(0,0,0)  						--no movement
+	elseif _ControlAxisVert < 0 and _ControlAxisHor == 0 then velocityGoal = vmath.vector3(0,-self.speed,0)			--Down
+	elseif _ControlAxisVert > 0 and _ControlAxisHor == 0 then velocityGoal = vmath.vector3(0,self.speed,0)			--Up
+	elseif _ControlAxisVert == 0 and _ControlAxisHor > 0 then velocityGoal = vmath.vector3(self.speed,0,0)			--Right
+	elseif _ControlAxisVert == 0 and _ControlAxisHor < 0 then velocityGoal = vmath.vector3(-self.speed,0,0)			--Left
+	elseif _ControlAxisVert > 0 and _ControlAxisHor > 0 then velocityGoal = vmath.vector3(normSpeed,normSpeed,0)		--Up-Right
+	elseif _ControlAxisVert > 0 and _ControlAxisHor < 0 then velocityGoal = vmath.vector3(-normSpeed,normSpeed,0)	--Up-Left
+	elseif _ControlAxisVert < 0 and _ControlAxisHor > 0 then velocityGoal = vmath.vector3(normSpeed,-normSpeed,0) 	--Down-Right
+	elseif _ControlAxisVert < 0 and _ControlAxisHor < 0 then velocityGoal = vmath.vector3(-normSpeed,-normSpeed,0)	--Down-Left
+	end
+
+	
+	--Changes the velocity so that movement 
+	--is smooth, velocityDelta determines the 
+	--amount of change per frame
+	velocity = vmath.lerp(self.velocityDelta, velocity, velocityGoal)
+	
+	--resets the input-axes to their volatile state
+	_ControlAxisVert = 0
+	_ControlAxisHor = 0
+	
+	-------------------------------------
+	--Updates the position of the player object 
+	--depending on the velocity determined above
+	--Position in algorithm???
+	------------------------------------
+	go.set_position(go.get_position() + velocity * dt)
+	
+	
+	-------------------------------------
+	--Iterates through the collision messages, 
+	--ignoring messages with a negative distance
+	--and adjusting for those that are valid
+	-------------------------------------
+	for i = 1, #collisions do
+	
+	
+		--------------PLACEHOLDER
+		--Iterate through collisions, checking the normals for redundancy, and discarding all except the (most recent)(highest distance?) one
+		--to attempt to resolve jitter
+		
+		
+		local collisionNorm = collisions[i]["normal"]
+		local collisionDist = collisions[i]["distance"]
+		
+		if collisionDist > 0 then
+			local newpos = go.get_position() + collisionNorm * collisionDist
+			go.set_position(newpos)
+		end
+		
+		--DEBUG print(collisions[i]["normal"], "     " , collisions[i]["distance"])
+		
+		-------------------------------------
+		--Prevents the player from moving towards a wall
+		--if they are already colliding with it, depending
+		--on the velocity and collision normal to prevent
+		--clipping  
+		--Still some jitter issues with higher speeds
+		-------------------------------------
+		if collisionNorm.x > 0 and velocity.x < 0 then 
+			velocity = vmath.vector3(0,velocity.y,0)
+		end
+		if collisionNorm.x < 0 and velocity.x > 0 then 
+			velocity = vmath.vector3(0,velocity.y,0)
+		end
+		if collisionNorm.y > 0 and velocity.y < 0 then 
+			velocity = vmath.vector3(velocity.x,0,0)
+		end
+    	if collisionNorm.y < 0 and velocity.y > 0 then
+    		velocity = vmath.vector3(velocity.x,0,0)
+		end
+		
+		
+		--clears the collision array
+		collisions[i] = nil
+	end
+	
+	if self.attackDelay <= 0 then
+		if _Attack == true then
+			_AttackMousePos.x = _MousePos.x
+			_AttackMousePos.y = _MousePos.y
+			offsetVec = vmath.vector3( swingDist * math.cos(angleRad), swingDist * math.sin(angleRad), 0)
+			factory.create("main:/hero_collection/attack_spawner#factory", go.get_position() + offsetVec, angleQuat)
+			self.attackDelay = self.delayMax
+			msg.post("main:/hero_collection/weapon#script", "m1_click")
+		end
+	else
+		_Attack = false
+		self.attackDelay = self.attackDelay - 1
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == collision_hash then
+		if message.group == hash('walls') then
+			table.insert(collisions, {["normal"] = message.normal, ["distance"] = message.distance})
+		end 
+	end
+	if message_id == hash("offset") then
+		angleQuat = message.angleQuat
+		angleRad = message.angleRad
+	end
+end
+
+

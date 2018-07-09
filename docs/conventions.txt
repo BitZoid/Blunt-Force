@@ -1,0 +1,40 @@
+--Initial Declarations Order
+
+1. Dependancies/Requires
+2. Global Constants
+3. Globals
+4. Local Constants
+5. Locals
+6. Properties
+
+
+
+
+Globals -
+	Declared in overseerScript.script
+	Start with an underscore, Pascal Casing
+	Simple Abbreviations
+	e.g. - 	_ExampleGlobal
+
+Locals - 
+	Script locals declared at the top of the script, preceded by --[[ Locals ]]--
+	Otherwise locals are declared at the top of the control structure
+	Simple Abbreviations
+	Camel Casing
+	e.g. - 	exLocal
+
+Constants -
+	All upper, seperated by underscored
+	No abbreviations
+	e.g. - 	EXAMPLE_CONSTANT
+
+Dependancies -
+	Declared at the very top of the script
+	If named, Pascal Case, seperated by underscores
+	e.g. - 	Example_Requirement
+
+Properties - 
+	Declared after locals - function as instance-private variables
+	Preceded by --[[ Instance Properties ]]--
+	Camel Case, seperated by underscores
+	e.g. - 	example_Property

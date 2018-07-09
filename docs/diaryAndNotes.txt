@@ -1,0 +1,28 @@
+7/7/2018
+	worked in library from 1:00 - 4:45
+	Listening: C418 on soundcloud
+	Focus - meh, got distracted by forum posts.  having fun, though
+		Mostly code organization and refactoring, cleaning up and trying to understand old code
+		Created Overseer object - holds globals and acts as the input focus.  Need to think about the logistics a little more
+		Created conventions, diary, and roadmap text document
+			Added some conventions - need to go through and enforce them
+			Moved a lot of variables to globals declared in overseer
+		Did some editing on the forum post, need to resume updating as I work on this more.
+	------
+	move all 'child' code to the hero script? (from weapon.sript to hero.script) aside from sprite/animation stuff?
+		would make it easier to handle/edit, more difficult to create new weapons? maybe
+	--
+	Lost changes that need to be re-added:
+		Need to fix weapon rotation stuff and reorganize all that code to be more understandable
+		Bullet reflection masking and related code
+		Subtle lerp-ing of camera and weapon, to make it seem more fluid
+		GUI
+		Attack Tweaking
+	------
+	bugs:
+		Unintentional delay on weapon positioning - would be fixed if related code moved to hero.script from weapon.script
+	------
+	Gotta make sure to make a backup when syncing - dont want to lose everything... for the third time...
+	--
+	That's it.  Now I need to finish graduation thank-you's
+	Want to get to v.0.2 by monday

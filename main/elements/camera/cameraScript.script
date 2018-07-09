@@ -1,0 +1,37 @@
+
+--go.property("velocityDelta", .2)
+
+function init()
+    msg.post("#camera", "acquire_camera_focus")
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("follow") then
+    	--hero_pos = message.position
+    
+        
+        
+    end
+end
+
+function update(self, dt)
+    local pos_x = _HeroPos.x - (_SCREEN_WIDTH / 2)
+    local pos_y = _HeroPos.y - (_SCREEN_HEIGHT / 2)
+
+    go.set_position(vmath.vector3(pos_x, pos_y, 0))
+
+
+    
+	--[[
+	*   To-Do : LERP the camera
+	*	Use an algorithm? similar to the player LERP to smoothly follow the player around,
+	*	while keeping a relative pace so the player can never fall out of view no matter what the speed
+	*	pace should increase as the distance from the follow target increases and vice-versa
+	*
+	local velocityGoal = vmath.vector3(go.get_position().x - hero_pos.x, go.get_position().y - hero_pos.y, 0)
+	
+	velocity = vmath.lerp(self.velocityDelta, velocity, velocityGoal)
+	
+	go.set_position(go.get_position() + velocity * dt)
+	]]--
+end

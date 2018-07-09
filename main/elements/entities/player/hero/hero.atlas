@@ -1,0 +1,9 @@
+images {
+  image: "/main/elements/entities/player/weapon/shovel/robotHand.png"
+}
+images {
+  image: "/main/elements/entities/player/weapon/shovel/robotShovel.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0

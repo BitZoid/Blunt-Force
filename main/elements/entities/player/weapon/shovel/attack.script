@@ -1,0 +1,18 @@
+go.property("parentScript", hash("main:/hero_collection/weapon#script"))
+
+function init(self)
+	lifespan = 15
+	scale = 1
+end
+
+
+function update(self, dt)
+	scale = scale * 1.1
+	go.set_scale(vmath.vector3(scale, scale, 1))
+	lifespan = lifespan - 1
+	if lifespan < 1 then
+		go.delete()
+	end
+end
+
+
