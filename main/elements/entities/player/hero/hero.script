@@ -22,7 +22,6 @@ function init(self)
 end
 
 function update(self, dt)
-	print("hero1")
 	if math.abs(heroVelocity.x) + math.abs(heroVelocity.y) > 20 then
 		if curAnim ~= 1 then
 			msg.post("#sprite", "play_animation", {id = hash("run_left")})
@@ -127,9 +126,8 @@ function update(self, dt)
 		_Attack = false
 		self.attackDelay = self.attackDelay - 1
 	end
-
+		--------------testing git>
 	_HeroPos = go.get_position(".")
-	print("hero2")
 end
 
 function on_message(self, message_id, message, sender)

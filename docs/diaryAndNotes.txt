@@ -33,4 +33,4 @@
 		All object position updating should happen at the end of the update function, 
 		and if necessary should be followed by an update to the corresponding global
 	Keeping positioning code where it is, unintentional lerp-effect fixed by ^^^
-	
+	unified camera code into overseer
