@@ -13,7 +13,6 @@ end
 
 function update(self, dt)
 	gui.set_text(healthCounter, _PlayerHealth)
-	print(_PlayerHealth)
 	gui.set_text(scoreCounter, _PlayerScore)
 end
 

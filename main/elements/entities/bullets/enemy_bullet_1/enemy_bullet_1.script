@@ -18,6 +18,11 @@ function init(self)
 	self.lifespan_initial = self.lifespan
 	self.speed_initial = self.speed
 	self.velocity = self.direction * self.speed
+
+	if self.reflected then
+		sprite.play_flipbook("#sprite", "reflected")
+	end
+	
 end
 
 
@@ -27,6 +32,7 @@ function update(self, dt)
 	if self.collisionHash == hash('walls') then
 		go.delete()
 	elseif self.collisionHash == hash('hero') then
+		msg.post("/overseer#overseerScript", "damageHero", {damage = 1})
 		go.delete()
 	elseif self.collisionHash == hash('enemies') and self.reflected then
 		go.delete()
@@ -35,6 +41,7 @@ function update(self, dt)
 		self.direction = vmath.normalize(vmath.vector3(_AttackMousePos.x + _CamPos.x - _WeaponPos.x, _AttackMousePos.y + _CamPos.y - _WeaponPos.y, 0))
 		self.velocity = self.direction * self.speed
 		self.reflected = true
+		sprite.play_flipbook("#sprite", "reflected")
 		self.collisionHash = hash('')
 	end
 
