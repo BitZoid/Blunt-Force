@@ -29,7 +29,7 @@ components {
   }
 }
 embedded_components {
-  id: "collisionobject"
+  id: "defaultCollision"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
@@ -40,6 +40,7 @@ embedded_components {
   "mask: \"walls\"\n"
   "mask: \"hero\"\n"
   "mask: \"weapon\"\n"
+  "mask: \"enemies\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"

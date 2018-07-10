@@ -9,12 +9,13 @@ require "modules/callbacks.bullet_1" --AKA bullet_1_callbacks
 --direction, position : vector3
 --speed : integer
 --child-properties: if a child is desired, child-properties will contain the information
-bulletProto.newBullet = function(factory_url, position, direction, speed, lifespan, callback_id, callback)	
+bulletProto.newBullet = function(factory_url, position, direction, speed, lifespan, callback_id, callback, reflected)	
+	reflected = reflected or false
 	thisBullet = factory.create(
 		factory_url, 
 		position, 
 		vmath.quat_axis_angle(vmath.vector3(0, 0,1),math.atan2(direction.y,direction.x)), 
-		{direction = direction, speed = speed, lifespan = lifespan, callback_id = callback_id}
+		{direction = direction, speed = speed, lifespan = lifespan, callback_id = callback_id, reflected = reflected}
 	)	
 	if not bullet_1_callbacks[callback_id]then
 		bullet_1_callbacks[callback_id] = callback

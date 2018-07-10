@@ -9,9 +9,7 @@ go.property("lifespan_initial", 0)
 go.property("callback_id", 0)
 go.property("reflected", false)
 go.property("type", 1)
-go.property("wallHit",false)
-go.property("playerHit",false)
-go.property("weaponHit",false)
+go.property("collisionHash", hash(""))
 go.property("prevPos", vmath.vector3(0))
 go.property("attackMousePos", vmath.vector3(0))
 
@@ -26,17 +24,20 @@ end
 function update(self, dt)
 	local selfPos = go.get_position(".")
 	
-	
-	if self.wallHit then
-		self.lifespan = 0
-	elseif self.playerHit then
-		self.lifespan = 0
-	elseif self.weaponHit then
+	if self.collisionHash == hash('walls') then
+		go.delete()
+	elseif self.collisionHash == hash('hero') then
+		go.delete()
+	elseif self.collisionHash == hash('enemies') and self.reflected then
+		go.delete()
+	elseif self.collisionHash == hash('weapon') and not self.reflected then
 		msg.post("/hero_collection/weapon#script","reflected")
 		self.direction = vmath.normalize(vmath.vector3(_AttackMousePos.x + _CamPos.x - _WeaponPos.x, _AttackMousePos.y + _CamPos.y - _WeaponPos.y, 0))
 		self.velocity = self.direction * self.speed
+		self.reflected = true
+		self.collisionHash = hash('')
 	end
-	
+
 	self.prevPos = go.get(".", "position")
 	self.lifespan = self.lifespan - dt
 	if self.lifespan <= 0 then
@@ -52,21 +53,11 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("contact_point_response") then
-		if message.group == hash('walls') then
-			self.wallHit = true
-		elseif message.group == hash('hero') then
-			self.playerHit = true
-		elseif message.group == hash('weapon') then
-			self.weaponHit = true
-		end
-	elseif message_id == hash("ray_cast_response") then
-		if message.group == hash("hero") then
-			self.playerHit = true
-		elseif message.group == hash("wall") then
-			self.wallHit = true
-		elseif message.group == hash('weapon') then
-			self.weaponHit = true
+	if message_id == hash("contact_point_response") or message_id == hash("ray_cast_response") then
+		if self.collisionHash == hash("") and 
+		not (not self.reflected and message.group == hash("enemies")) and 
+		not (self.reflected and (message.group == hash("hero") or message.group == hash("weapon"))) then
+			self.collisionHash = message.group
 		end
 	elseif message_id == hash('weaponReflect') then
 		if message.speed then

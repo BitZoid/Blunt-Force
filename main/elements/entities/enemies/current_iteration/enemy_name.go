@@ -39,6 +39,7 @@ embedded_components {
   "group: \"enemies\"\n"
   "mask: \"walls\"\n"
   "mask: \"hero\"\n"
+  "mask: \"bullets\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
