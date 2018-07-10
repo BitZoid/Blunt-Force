@@ -21,7 +21,9 @@ function init(self)
 	self.playerVisible = false
 	self.tracking = false
 	self.shooting = false
-
+	self.health = 15
+	self.pointValue = 100
+	
 	self.idleBehaviors = {
 		{
 			direction = 1,
@@ -156,12 +158,17 @@ function update(self, dt)
 		end
 		)
 	end
+	if self.health <= 0 then
+		death(self.pointValue)
+	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("contact_point_response") then
 		if message.group == hash("walls") then
 			table.insert(self.collisions, {["normal"] = message.normal, ["distance"] = message.distance})
+		elseif message.group == hash("weapon") then
+			self.health = self.health - _WeaponDamage
 		end
 	elseif message_id == hash("ray_cast_response") then
 		if message.group == hash("hero") then
@@ -169,7 +176,9 @@ function on_message(self, message_id, message, sender)
 		else
 			self.playerVisible = false
 		end
-	end
+	elseif message_id == hash("bullet_hit") then
+			self.health = self.health - message.damage
+	end	
 end
 
 --loops through the collisions array, adjusting the enemy's position and direction of movement so that it bounces off at an equal angle
@@ -222,4 +231,9 @@ function handleAnimations(self)
 			self.curAnim = 2
 		end
 	end
+end
+
+function death(points)
+	_PlayerScore = _PlayerScore + points
+	go.delete()
 end

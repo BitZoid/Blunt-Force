@@ -1,12 +1,12 @@
 0.1
 [$$$$$$$]	Bullet Reflection Masking
 [$$$$$$$]	Player Health and Score
-[		]	Enemy Health and attributes (damage, etc)
+[$$$$$$$]	Enemy Health and attributes (damage, etc)
 [$$$$$$$]	Simple GUI
-[		]	Weapon Damage
-[		]	Enemy Death
+[$$$$$$$]	Weapon Damage
+[$$$$$$$]	Enemy Death
 [$$$$$$$]	Bullet Reflection Sprite hue shift
-[		]	Code Cleaned/Uniform
+[-------]	Code Cleaned/Uniform
 0.2
 [		]	Level loading/regeneration
 [		]	"Winning" a level -> generation of a new level

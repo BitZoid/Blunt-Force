@@ -1,3 +1,6 @@
+--[[GLOBALS]]--
+_WeaponDamage = 2
+
 --[[ Locals ]]--
 local adjustment = vmath.vector3(0,-6,0)
 local sprite1Url = msg.url("main:/hero_collection/weapon#sprite1") -- shovel

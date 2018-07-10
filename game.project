@@ -3,6 +3,7 @@ title = Shovel Prototype
 version = 0.2
 compress_archive = 1
 dependencies = https://github.com/subsoap/defos/archive/master.zip
+write_log = 0
 
 [bootstrap]
 main_collection = /main/main.collectionc
