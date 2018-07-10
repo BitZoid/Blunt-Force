@@ -16,7 +16,7 @@
 		¤    Need to fix weapon rotation stuff and reorganize all that code to be more understandable
 		¤    Bullet reflection masking and related code
 		¤    Subtle lerp-ing of camera and weapon, to make it seem more fluid
-		GUI
+		¤    GUI
 		¤    Attack Tweaking
 	------
 	bugs:
@@ -40,4 +40,10 @@
 	listening: chill mix
 	Getting it back up to speed, but with cleaner, more thought out code. 
 	got the bullet masking back together with simpler code and object structure
+	-----
+	got up to v0.2
+	to-do: make a forum post?
+			clean up code
+			start menu, pause menu
+	
 	

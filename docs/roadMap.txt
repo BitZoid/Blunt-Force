@@ -11,6 +11,7 @@
 [		]	Level loading/regeneration
 [		]	"Winning" a level -> generation of a new level
 [		]	Player Death
+[		]	Death animations
 
 Far Future
 [		]	Startup Menu/Main Menu
