@@ -6,9 +6,9 @@ Enemy_Proto = require "modules.enemy_prototype" --AKA enemyProto
 -- [[ GLOBALS ]] --
 _SCREEN_WIDTH = tonumber(sys.get_config("display.width"))
 _SCREEN_HEIGHT = tonumber(sys.get_config("display.height"))
-_HeroPos = vmath.vector3()
+_HeroPos = vmath.vector3()			--(center)
 _CamPos = vmath.vector3()
-_WeaponPos = vmath.vector3()
+_WeaponPos = vmath.vector3() 		--(center)
 _MousePos = vmath.vector3()			--set by input in hero.script
 _AttackMousePos = vmath.vector3()	--set to mousePos in hero.script on m1_click
 _PlayerFacingLeft = true
@@ -16,11 +16,20 @@ _CursorAbove = true
 _ControlAxisVert = 0
 _ControlAxisHor = 0
 _Attack = false
+_WeaponAngle = 0	--angle from weapon to mouse  --unit circle, varies from pi to negative pi, with 0 to the right, pi/-pi to the left
+_WeaponAngleQuat = 0
 
 
 
 function init(self)
+
+	print("overseeri")
 	msg.post(".", "acquire_input_focus")
+	msg.post("#camera", "acquire_camera_focus")
+	_HeroPos = go.get_position("/hero_collection/hero")
+	_CamPos = go.get_position("/camera")
+	_WeaponPos = go.get_position("/hero_collection/weapon")
+	_WeaponAngle = math.atan2(_MousePos.y + _CamPos.y - _WeaponPos.y, _MousePos.x  + _CamPos.x - _WeaponPos.x)
 end
 
 function final(self)
@@ -29,20 +38,21 @@ function final(self)
 end
 
 function update(self, dt)
-	_HeroPos = go.get_position("/hero_collection/hero")
-	_CamPos = go.get_position("/camera")
-	_WeaponPos = go.get_position("/hero_collection/weapon")
-	
+	print("overseer1")
 	if _MousePos.x + _CamPos.x - _HeroPos.x >= 0 then	--(mouse to left of player center)
 		_PlayerFacingLeft = false
 	else
 		_PlayerFacingLeft = true
 	end 
-	if _MousePos.y  + _CamPos.y > _WeaponPos.y then	--(mouse above player center)
+	if _MousePos.y  + _CamPos.y > _WeaponPos.y then	--(mouse above weapon center)
 		_CursorAbove = true
 	else
 		_CursorAbove = false
 	end
+
+
+	go.set_position(vmath.vector3(_HeroPos.x - (_SCREEN_WIDTH / 2), _HeroPos.y - (_SCREEN_HEIGHT / 2), 0),"/camera")
+	_CamPos = go.get_position(".")
 end
 
 function on_message(self, message_id, message, sender)

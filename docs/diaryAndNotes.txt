@@ -26,3 +26,11 @@
 	--
 	That's it.  Now I need to finish graduation thank-you's
 	Want to get to v.0.2 by monday
+
+7/9/2018
+	Working in library/at home intermittently
+	listening: Kodaline
+		All object position updating should happen at the end of the update function, 
+		and if necessary should be followed by an update to the corresponding global
+	Keeping positioning code where it is, unintentional lerp-effect fixed by ^^^
+	

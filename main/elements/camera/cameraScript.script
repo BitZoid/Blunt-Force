@@ -1,25 +1,14 @@
-
---go.property("velocityDelta", .2)
-
 function init()
-    msg.post("#camera", "acquire_camera_focus")
+	msg.post("#camera", "acquire_camera_focus")
+	print("camerai")
 end
 
 function on_message(self, message_id, message, sender)
-    if message_id == hash("follow") then
-    	--hero_pos = message.position
-    
-        
-        
-    end
+
 end
 
 function update(self, dt)
-    local pos_x = _HeroPos.x - (_SCREEN_WIDTH / 2)
-    local pos_y = _HeroPos.y - (_SCREEN_HEIGHT / 2)
-
-    go.set_position(vmath.vector3(pos_x, pos_y, 0))
-
+	print("camera1")
 
     
 	--[[
@@ -34,4 +23,8 @@ function update(self, dt)
 	
 	go.set_position(go.get_position() + velocity * dt)
 	]]--
+
+
+	
+	print("camera2")
 end

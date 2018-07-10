@@ -4,38 +4,60 @@ local sprite1Url = msg.url("main:/hero_collection/weapon#sprite1") -- shovel
 local sprite2Url = msg.url("main:/hero_collection/weapon#sprite2") -- hand
 local sprite3Url = msg.url("main:/hero_collection/weapon#sprite3") -- hand
 local angleOffsetOriginal = .5
+local angleOffsetGoal = angleOffsetOriginal
 local angleOffset
 
 --[[ Instance Properties ]]--
 go.property("angle", 0)
 
 function init(self)
-	angleOffset= angleOffsetOriginal
+	angleOffset = angleOffsetOriginal
+
+	print("weaponi")
 end
 
 function update(self, dt)
-	self.angle = math.atan2(_MousePos.y + _CamPos.y - _WeaponPos.y, _MousePos.x  + _CamPos.x - _WeaponPos.x)
-	angleQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), self.angle - (math.pi) + angleOffset)
-	go.set_rotation(angleQuat)
-	
-	if angleOffsetOriginal ~= angleOffset then
-		if _PlayerFacingLeft then
-			angleOffset= angleOffsetOriginal - ( go.get("/hero_collection/hero#script", "attackDelay") / go.get("/hero_collection/hero#script", "delayMax") * angleOffsetOriginal *2)
+	print("weapon1")
+	if _PlayerFacingLeft then
+		if _CursorAbove then
+			angleOffsetGoal = angleOffsetOriginal
 		else
-			angleOffset= -angleOffsetOriginal + ( go.get("/hero_collection/hero#script", "attackDelay") / go.get("/hero_collection/hero#script", "delayMax") * angleOffsetOriginal *2)
+			angleOffsetGoal = -angleOffsetOriginal
+		end
+	else
+		if _CursorAbove then
+			angleOffsetGoal = -angleOffsetOriginal
+		else
+			angleOffsetGoal = angleOffsetOriginal
 		end
 	end
+	angleOffset= vmath.lerp(.2, angleOffset, angleOffsetGoal)
 
+	local flipSprites = false
+	if math.abs(_WeaponAngle + angleOffset) < math.pi / 2 then
+		flipSprites = true
+	end
 
-	go.set_position(_HeroPos + adjustment) --move to player script?
-	msg.post("/hero_collection/hero#script", "offset", {angleQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), self.angle - (math.pi)), angleRad = self.angle})
+	if (_WeaponAngle + angleOffset > 0 and _WeaponAngle + angleOffset < math.pi) or _WeaponAngle + angleOffset < -math.pi then
+		sprite.set_hflip(sprite2Url, true)
+		sprite.set_hflip(sprite3Url, true)
+	else
+		sprite.set_hflip(sprite2Url, false)
+		sprite.set_hflip(sprite3Url, false)
+	end
 	
-	sprite.set_vflip(sprite1Url, not _PlayerFacingLeft)
-	sprite.set_vflip(sprite2Url, not _PlayerFacingLeft)
-	sprite.set_vflip(sprite3Url, not _PlayerFacingLeft)
+	sprite.set_vflip(sprite1Url, flipSprites)
+	sprite.set_vflip(sprite2Url, flipSprites)
+	sprite.set_vflip(sprite3Url, flipSprites)
 	
-	sprite.set_hflip(sprite2Url, _CursorAbove)
-	sprite.set_hflip(sprite3Url, _CursorAbove)
+	go.set_position(vmath.lerp(.4, _WeaponPos, _HeroPos + adjustment))
+	_WeaponPos = go.get_position(".")
+	
+	_WeaponAngle = math.atan2(_MousePos.y + _CamPos.y - _WeaponPos.y, _MousePos.x  + _CamPos.x - _WeaponPos.x)
+	_WeaponAngleQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), _WeaponAngle - (math.pi))
+	offsetQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), _WeaponAngle - (math.pi) + angleOffset)
+	go.set_rotation(offsetQuat)
+	print("weapon2")
 end
 
 function on_message(self, message_id, message, sender)
@@ -48,11 +70,10 @@ function on_message(self, message_id, message, sender)
 			--adjustment = vmath.vector3(5.25,-6,0)
 		end
 	end--]]
-	--[[
-	if message_id == hash("m1_click") then
+	if message_id == hash("attack") then
 		attacked = true
-		angleOffset= -angleOffset
-	end--]]
+		angleOffset= -angleOffset * 12
+	end
 	if message_id == hash("reflected") then
 		propertiesTable = {			
 			speedMultiplier = 1,
