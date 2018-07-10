@@ -25,7 +25,7 @@ function init(self)
 
 	print("overseeri")
 	msg.post(".", "acquire_input_focus")
-	msg.post("#camera", "acquire_camera_focus")
+	msg.post("/camera#camera", "acquire_camera_focus")
 	_HeroPos = go.get_position("/hero_collection/hero")
 	_CamPos = go.get_position("/camera")
 	_WeaponPos = go.get_position("/hero_collection/weapon")
