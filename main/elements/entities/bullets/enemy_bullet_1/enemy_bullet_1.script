@@ -1,6 +1,7 @@
 local callback_url = require "modules/callbacks.bullet_1"--AKA bullet_1_callbacks
 
 go.property("direction", vmath.vector3(0,0,0))
+go.property("damage", 1)
 go.property("speed", 0)
 go.property("speed_initial", 0)
 go.property("velocity", vmath.vector3(0,0,0))
@@ -12,6 +13,7 @@ go.property("type", 1)
 go.property("collisionHash", hash(""))
 go.property("prevPos", vmath.vector3(0))
 go.property("attackMousePos", vmath.vector3(0))
+go.property("hitUrl", hash(""))
 
 function init(self)
 	self.prevPos = go.get(".", "position")
@@ -32,9 +34,10 @@ function update(self, dt)
 	if self.collisionHash == hash('walls') then
 		go.delete()
 	elseif self.collisionHash == hash('hero') then
-		msg.post("/overseer#overseerScript", "damageHero", {damage = 1})
+		msg.post("/overseer#overseerScript", "damageHero", {damage = self.damage})
 		go.delete()
 	elseif self.collisionHash == hash('enemies') and self.reflected then
+		msg.post(self.hitUrl, "bullet_hit", {damage = self.damage})
 		go.delete()
 	elseif self.collisionHash == hash('weapon') and not self.reflected then
 		msg.post("/hero_collection/weapon#script","reflected")
@@ -43,6 +46,7 @@ function update(self, dt)
 		self.reflected = true
 		sprite.play_flipbook("#sprite", "reflected")
 		self.collisionHash = hash('')
+		self.hitUrl = hash('')
 	end
 
 	self.prevPos = go.get(".", "position")
@@ -65,6 +69,7 @@ function on_message(self, message_id, message, sender)
 		not (not self.reflected and message.group == hash("enemies")) and 
 		not (self.reflected and (message.group == hash("hero") or message.group == hash("weapon"))) then
 			self.collisionHash = message.group
+			self.hitUrl = message.other_id
 		end
 	elseif message_id == hash('weaponReflect') then
 		if message.speed then

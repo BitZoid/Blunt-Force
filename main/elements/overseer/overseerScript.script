@@ -93,4 +93,5 @@ function on_input(self, action_id, action)
 end
 
 function game_over()
+	go.delete("/hero_collection/hero")
 end
