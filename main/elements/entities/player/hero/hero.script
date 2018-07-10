@@ -128,6 +128,10 @@ function update(self, dt)
 	end
 
 	_HeroPos = go.get_position(".")
+	local camWorldPos = vmath.vector3(_HeroPos.x - (_SCREEN_WIDTH / 2), _HeroPos.y - (_SCREEN_HEIGHT / 2), 0)
+	local camAvgPos = vmath.vector3(camWorldPos.x + (_MousePos.x-(_SCREEN_WIDTH / 2))/8, camWorldPos.y + (_MousePos.y - (_SCREEN_HEIGHT / 2))/8, 0) 
+	go.set_position(vmath.lerp(.15, go.get_position("/camera#camera"), camAvgPos), "/camera#camera")
+	_CamPos = go.get_position("/camera#camera")
 end
 
 function on_message(self, message_id, message, sender)

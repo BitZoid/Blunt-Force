@@ -22,8 +22,6 @@ _WeaponAngleQuat = 0
 
 
 function init(self)
-
-	print("overseeri")
 	msg.post(".", "acquire_input_focus")
 	msg.post("/camera#camera", "acquire_camera_focus")
 	_HeroPos = go.get_position("/hero_collection/hero")
@@ -38,7 +36,6 @@ function final(self)
 end
 
 function update(self, dt)
-	print("overseer1")
 	if _MousePos.x + _CamPos.x - _HeroPos.x >= 0 then	--(mouse to left of player center)
 		_PlayerFacingLeft = false
 	else
@@ -51,8 +48,7 @@ function update(self, dt)
 	end
 
 
-	go.set_position(vmath.vector3(_HeroPos.x - (_SCREEN_WIDTH / 2), _HeroPos.y - (_SCREEN_HEIGHT / 2), 0),"/camera")
-	_CamPos = go.get_position(".")
+	
 end
 
 function on_message(self, message_id, message, sender)

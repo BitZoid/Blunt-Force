@@ -7,17 +7,12 @@ local angleOffsetOriginal = .5
 local angleOffsetGoal = angleOffsetOriginal
 local angleOffset
 
---[[ Instance Properties ]]--
-go.property("angle", 0)
 
 function init(self)
 	angleOffset = angleOffsetOriginal
-
-	print("weaponi")
 end
 
 function update(self, dt)
-	print("weapon1")
 	if _PlayerFacingLeft then
 		if _CursorAbove then
 			angleOffsetGoal = angleOffsetOriginal
@@ -57,7 +52,6 @@ function update(self, dt)
 	_WeaponAngleQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), _WeaponAngle - (math.pi))
 	offsetQuat = vmath.quat_axis_angle(vmath.vector3(0, 0,1), _WeaponAngle - (math.pi) + angleOffset)
 	go.set_rotation(offsetQuat)
-	print("weapon2")
 end
 
 function on_message(self, message_id, message, sender)
