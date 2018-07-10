@@ -1,4 +1,4 @@
 tile_set: "/main/elements/entities/bullets/enemy_bullet_1/images/bullet.tilesource"
-default_animation: "anim"
+default_animation: "default"
 material: "/builtins/materials/sprite.material"
 blend_mode: BLEND_MODE_ALPHA

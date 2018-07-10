@@ -18,6 +18,9 @@ _ControlAxisHor = 0
 _Attack = false
 _WeaponAngle = 0	--angle from weapon to mouse  --unit circle, varies from pi to negative pi, with 0 to the right, pi/-pi to the left
 _WeaponAngleQuat = 0
+_PlayerHealthMax = 10
+_PlayerHealth = _PlayerHealthMax
+_PlayerScore = 0
 
 
 
@@ -48,12 +51,15 @@ function update(self, dt)
 	end
 
 
-	
+	if _PlayerHealth <= 0 then
+		game_over()
+	end
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+	if message_id == hash("damageHero") then
+		_PlayerHealth = _PlayerHealth - message.damage
+	end	
 end
 
 function on_input(self, action_id, action)
@@ -86,7 +92,5 @@ function on_input(self, action_id, action)
 	end
 end
 
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Remove this function if not needed
+function game_over()
 end

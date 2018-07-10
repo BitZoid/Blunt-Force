@@ -8,7 +8,9 @@
 6. Properties
 
 
-
+Functions -
+	all lowercase, seperated by underscores
+	e.g. - example_function()
 
 Globals -
 	Declared in overseerScript.script

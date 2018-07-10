@@ -1,11 +1,11 @@
 0.1
-[		]	Bullet Reflection Masking
-[		]	Player Health and Score
+[$$$$$$$]	Bullet Reflection Masking
+[$$$$$$$]	Player Health and Score
 [		]	Enemy Health and attributes (damage, etc)
-[		]	Simple GUI
+[$$$$$$$]	Simple GUI
 [		]	Weapon Damage
 [		]	Enemy Death
-[		]	Bullet Reflection Sprite hue shift
+[$$$$$$$]	Bullet Reflection Sprite hue shift
 [		]	Code Cleaned/Uniform
 0.2
 [		]	Level loading/regeneration
@@ -17,4 +17,4 @@ Far Future
 [		]	Pause Menu
 [		]	Tile art
 [		]	Weapon Swapping/New weapons
-[		]	
+[		]	particles to make it fancy

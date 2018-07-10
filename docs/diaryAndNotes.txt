@@ -13,11 +13,11 @@
 		would make it easier to handle/edit, more difficult to create new weapons? maybe
 	--
 	Lost changes that need to be re-added:
-		Need to fix weapon rotation stuff and reorganize all that code to be more understandable
-		Bullet reflection masking and related code
-		Subtle lerp-ing of camera and weapon, to make it seem more fluid
+		¤    Need to fix weapon rotation stuff and reorganize all that code to be more understandable
+		¤    Bullet reflection masking and related code
+		¤    Subtle lerp-ing of camera and weapon, to make it seem more fluid
 		GUI
-		Attack Tweaking
+		¤    Attack Tweaking
 	------
 	bugs:
 		Unintentional delay on weapon positioning - would be fixed if related code moved to hero.script from weapon.script
@@ -28,9 +28,16 @@
 	Want to get to v.0.2 by monday
 
 7/9/2018
-	Working in library/at home intermittently
+	Working in library
 	listening: Kodaline
 		All object position updating should happen at the end of the update function, 
 		and if necessary should be followed by an update to the corresponding global
 	Keeping positioning code where it is, unintentional lerp-effect fixed by ^^^
 	unified camera code into overseer
+
+7/10/2018
+	WOrking in library
+	listening: chill mix
+	Getting it back up to speed, but with cleaner, more thought out code. 
+	got the bullet masking back together with simpler code and object structure
+	
