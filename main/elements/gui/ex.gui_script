@@ -1,6 +1,9 @@
+local healthCounter
+local scoreCounter
+
 function init(self)
-	-- Add initialization code here
-	-- Remove this function if not needed
+	healthCounter = gui.get_node("healthCounter")
+	scoreCounter = gui.get_node("scoreCounter")
 end
 
 function final(self)
@@ -9,8 +12,9 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
+	gui.set_text(healthCounter, _PlayerHealth)
+	print(_PlayerHealth)
+	gui.set_text(scoreCounter, _PlayerScore)
 end
 
 function on_message(self, message_id, message, sender)
