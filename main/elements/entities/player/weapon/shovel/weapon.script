@@ -58,17 +58,17 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("attack") then
+	if message_id == _AttackHash then
 		attacked = true
 		angleOffset= -angleOffset * 12
 	end
-	if message_id == hash("reflected") then
+	if message_id == _ReflectedHash then
 		propertiesTable = {			
 			speedMultiplier = 1,
 			lifespanMultiplier = .7
 		}
 		callback = function()
-			bulletProto.newBullet(bulletProto.bulletTypes.bullet_1,  
+			bulletProto.newBullet(bulletProto.bulletTypes[1],  
 				go.get(".", "position"), 
 				enemyProto.derivativeDirection(enemyProto.randomDirection(), -100, 100),
 				200 + enemyProto.randomFloat(-20, 20), 1, 2,

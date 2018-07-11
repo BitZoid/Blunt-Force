@@ -1,5 +1,4 @@
 -- Functions used in enemy AI
-
 enemyProto = {}
 
 --returns true if the target GO is within the radius from the origin
@@ -18,10 +17,6 @@ enemyProto.randomFloat = function(rangeMin, rangeMax)		return math.random(math.c
 --simplified call to the go.animate function
 enemyProto.delay = function(duration, var, callbackFunc)		go.animate("#", var, go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, duration, 0, callbackFunc)		end
 
-
-
-
-
 --Returns a velocity that is a degree inbetween rangeMin and rangeMax offset from the previous velocity (Normalized)
 enemyProto.derivativeDirection = function(previousDir, rangeMin, rangeMax)
 	output = vmath.vector3(0)
@@ -35,9 +30,20 @@ end
 --simpler syntax for making raycasts
 --requires code in on_message to catch and do something with the returns
 enemyProto.rayCast = function(targetPosition, targetGroups, id)
-	targetGroups = targetGroups or {hash("hero"), hash("walls")}
+	targetGroups = targetGroups or {_HeroHash, _WallsHash}
 	id = id or 0
 	physics.ray_cast( go.get(".", "position"), targetPosition, targetGroups, id)
 end
 
 enemyProto.flip = function(velocity)		if velocity.x < 0 then sprite.set_hflip("#sprite", true)  elseif velocity.x > 0 then  sprite.set_hflip("#sprite", false)  end			end
+
+enemyProto.createEnemy = function(location, properties)
+	factory.create("enemyFactory", location, nil, properties)
+end
+
+
+
+
+
+
+
