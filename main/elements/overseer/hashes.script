@@ -1,0 +1,24 @@
+_WallsHash = hash('walls')
+_HeroHash = hash('hero')
+_EnemiesHash = hash('enemies')
+_BulletsHash = hash('bullets')
+_WeaponHash  = hash('weapon')
+
+_DamageHeroHash = hash("damageHero")
+_AttackHash = hash("attack")
+_ReflectedHash = hash("reflected") 
+_NilHash = hash('')
+
+_UpHash = hash("up")
+_DownHash = hash("down") 
+_RightHash = hash("right") 
+_LeftHash = hash("left")
+_Mouse1Hash = hash("mouse1") 
+
+_ContactPointHash = hash("contact_point_response") 
+_RaycastResponseHash = hash("ray_cast_response")
+_WeaponReflectHash = hash('weaponReflect')
+
+_BulletHitHash = hash("bullet_hit")
+_IdleHash = hash("idle_left")
+_RunHash = hash("run_left")

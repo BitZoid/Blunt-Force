@@ -1,12 +1,30 @@
- --AKA enemyProto
+require "modules.enemy_prototype"--AKA enemyProto
 require "modules.bullet_prototype" --AKA bulletProto
 go.property("waitB", 0)
 go.property("waitS", 0)
+go.property("shooting", false)
+
+go.property("Speed", 900)
+go.property("Range", 400)
+go.property("Health", 15)
+go.property("PointValue", 100)
+go.property("ShootingPatternID", 1)
+go.property("BulletType", 1)
+go.property("IdleBehaviorsID", 1)
+go.property("TrackingBehaviorsID", 1)
+
 
 function init(self)
-	self.SPEED = 100 --movement speed
+	--[[
+	self.Speed = 100 --movement speed
 	self.RANGE = 400 --player tracking range
 
+	self.Health = 15
+	self.PointValue = 100
+	self.ShootingPatternID = 0
+	self.BulletType = bulletProto.bulletTypes.bullet_1
+	--]]
+	self.behaviorQueue = {}
 	self.velocity = vmath.vector3(0)
 	self.velocityGoal = vmath.vector3(0)
 	self.currentBehaviorCompleted = true
@@ -16,54 +34,12 @@ function init(self)
 	self.duration = 0
 	self.previousDirection = vmath.vector3(0)
 	self.collisions = {}
-	self.behaviorList = {}
 	self.t = 0
 	self.playerVisible = false
 	self.tracking = false
-	self.shooting = false
-	self.health = 15
-	self.pointValue = 100
 	
-	self.idleBehaviors = {
-		{
-			direction = 1,
-			speed = self.SPEED,
-			minSpeed = 0,
-			duration = math.random(1,2),
-			completionDelay = math.random(5,10)
-		},
-		{
-			direction = 0,
-			speed = self.SPEED * 1.2,
-			minSpeed = self.SPEED * .2,
-			duration = enemyProto.randomFloat(1, 5)/2,
-			completionDelay = enemyProto.randomFloat(2, 3)
-		},
-		{
-			direction = 0,
-			speed = self.SPEED * .8,
-			minSpeed = self.SPEED * .3,
-			duration = enemyProto.randomFloat(1, 5),
-			completionDelay = enemyProto.randomFloat(0, 4)
-		},
-		{
-			direction = 0,
-			speed = 0,
-			minSpeed = 0,
-			duration = enemyProto.randomFloat(3, 5),
-			completionDelay = 0
-		},
-	}
-
-	self.trackingBehaviors = {
-		{
-			direction = 2,
-			speed = self.SPEED,
-			minSpeed = self.SPEED,
-			duration = math.random(1,2),
-			completionDelay = 0
-		}
-	}
+	self.idleBehaviors = _IdleBehaviors[self.IdleBehaviorsID]
+	self.trackingBehaviors = _TrackingBehaviors[self.TrackingBehaviorsID]
 end
 
 function final(self)
@@ -71,47 +47,48 @@ end
 
 
 function update(self, dt)
+	local bulletURL = bulletProto.bulletTypes[self.BulletType]
 	local playerPos = go.get("/hero_collection/hero", "position") --gets the player's position
 	local selfPos = go.get(".", "position") --stores the current position
 
-
-	if self.playerVisible and enemyProto.targetInRange(selfPos, playerPos, self.RANGE) then
-		
-		if not self.tracking or self.behaviorList[1] == nil then
+	if self.playerVisible and enemyProto.targetInRange(selfPos, playerPos, self.Range) then
+		if not self.tracking or self.behaviorQueue[1] == nil then
 			self.tracking = true
-			self.behaviorList = {}
-			table.insert(self.behaviorList, self.trackingBehaviors[1])
+			self.behaviorQueue = {}
+			table.insert(self.behaviorQueue, self.trackingBehaviors[1])
 		end
-	elseif self.tracking or self.behaviorList[1] == nil then
+	elseif self.tracking or self.behaviorQueue[1] == nil then
 		self.tracking = false
-		self.behaviorList = {}
-		table.insert(self.behaviorList, self.idleBehaviors[1])
-		table.insert(self.behaviorList, self.idleBehaviors[math.random(1,4)])
+		self.behaviorQueue = {}
+		table.insert(self.behaviorQueue, self.idleBehaviors[1])
+		table.insert(self.behaviorQueue, self.idleBehaviors[math.random(1,4)])
 	end
 
 	if self.currentBehaviorCompleted == true then
+		self.behaviorQueue[1].duration = math.random(self.behaviorQueue[1].durationLower, self.behaviorQueue[1].durationUpper)
 		self.t = 0
 		self.currentBehaviorCompleted = false
 		self.velocityInitial = self.velocity
-		self.duration = self.behaviorList[1].duration / 2
-		if self.behaviorList[1].direction == 0 then
+		self.duration = self.behaviorQueue[1].duration / 2 --divided by 2 for acceleration then deceleration, in order to have the actual duration
+		if self.behaviorQueue[1].directionMode == 0 then
 			self.currentDirection = enemyProto.derivativeDirection(self.previousDirection, -45, 45)
-		elseif self.behaviorList[1].direction == 1 then
+		elseif self.behaviorQueue[1].directionMode == 1 then
 			self.currentDirection = enemyProto.randomDirection()
-		elseif self.behaviorList[1].direction == 2 then
-			self.currentDirection = enemyProto.target(playerPos)
+		elseif self.behaviorQueue[1].directionMode == 2 then
+			self.currentDirection = enemyProto.target(go.get_position("/hero_collection/hero"))
 		end
-		self.velocityGoal = self.currentDirection * self.behaviorList[1].speed
-		enemyProto.delay(self.behaviorList[1].duration, "waitB", function()
+		self.velocityGoal = self.currentDirection * self.behaviorQueue[1].speedMultiplier * self.Speed
+		enemyProto.delay(self.behaviorQueue[1].duration, "waitB", function()
 			self.t = 0
-			self.duration = self.behaviorList[1].completionDelay / 2
+			self.behaviorQueue[1].completionDelay = math.random(self.behaviorQueue[1].completionDelayLower, self.behaviorQueue[1].completionDelayUpper)
+			self.duration = self.behaviorQueue[1].completionDelay / 2 --same here
 			--self.velocityGoal = vmath.vector3(0)
-			self.velocityGoal = enemyProto.derivativeDirection(self.currentDirection, -5, 5) * self.behaviorList[1].minSpeed
+			self.velocityGoal = enemyProto.derivativeDirection(self.currentDirection, -5, 5) * self.behaviorQueue[1].minSpeedMultiplier * self.Speed
 			self.velocityInitial = self.velocity
-			enemyProto.delay(self.behaviorList[1].completionDelay, "waitB", function()
+			enemyProto.delay(self.behaviorQueue[1].completionDelay, "waitB", function()
 					self.currentBehaviorCompleted = true
 					self.previousDirection = self.currentDirection
-					table.remove(self.behaviorList, 1)
+					table.remove(self.behaviorQueue, 1)
 				end
 			)
 		end
@@ -136,49 +113,31 @@ function update(self, dt)
 
 	if not self.shooting and self.tracking then
 		self.shooting = true
-		enemyProto.delay(math.random()/10, "waitS", function()
-				bulletProto.test = 100
-				bulletProto.newBullet(bulletProto.bulletTypes.bullet_1, 
-					go.get(".", "position"), 
-					enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), -30, 30), 
-					200 + enemyProto.randomFloat(-20, 20), .5, 1,
-					function()
-						--[[print("callback_1")
-						 bulletProto.newBullet(bulletProto.bulletTypes.bullet_1,  
-							go.get(".", "position"), 
-							enemyProto.derivativeDirection(enemyProto.randomDirection(), -100, 100),
-							200 + enemyProto.randomFloat(-20, 20), 1, 2,
-							function()
-								print("callback_2")
-							end
-							)--]]
-				end
-				)
-			self.shooting = false
-		end
-		)
+		_ShootingPatterns[self.ShootingPatternID](bulletURL, self)
 	end
-	if self.health <= 0 then
-		death(self.pointValue)
+	if self.Health <= 0 then
+		death(self.PointValue)
 	end
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("contact_point_response") then
-		if message.group == hash("walls") then
+	if message_id == _ContactPointHash then
+		if message.group == _WallsHash then
 			table.insert(self.collisions, {["normal"] = message.normal, ["distance"] = message.distance})
-		elseif message.group == hash("weapon") then
-			self.health = self.health - _WeaponDamage
+		elseif message.group == _WeaponHash then
+			self.Health = self.Health - _WeaponDamage
 		end
-	elseif message_id == hash("ray_cast_response") then
-		if message.group == hash("hero") then
+	elseif message_id == _RaycastResponseHash then
+		if message.group == _HeroHash then
 			self.playerVisible = true
 		else
 			self.playerVisible = false
 		end
-	elseif message_id == hash("bullet_hit") then
-			self.health = self.health - message.damage
-	end	
+	elseif message_id == _BulletHitHash then
+			self.Health = self.Health - message.damage
+	elseif message_id == hash("") then
+
+	end
 end
 
 --loops through the collisions array, adjusting the enemy's position and direction of movement so that it bounces off at an equal angle
@@ -232,6 +191,7 @@ function handleAnimations(self)
 		end
 	end
 end
+
 
 function death(points)
 	_PlayerScore = _PlayerScore + points
