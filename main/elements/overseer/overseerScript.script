@@ -21,10 +21,14 @@ _WeaponAngleQuat = 0
 _PlayerHealthMax = 10
 _PlayerHealth = _PlayerHealthMax
 _PlayerScore = 0
+_EnemyTable = {}
 
 
 
 function init(self)
+	_EnemyTable = json.decode(sys.load_resource("/data/enemyTypes.json"))
+	print(_EnemyTable.enemies[1])
+	enemyProto.createEnemy(go.get_position("/hero_collection/hero"), _EnemyTable.enemies[1])
 	msg.post(".", "acquire_input_focus")
 	msg.post("/camera#camera", "acquire_camera_focus")
 	_HeroPos = go.get_position("/hero_collection/hero")
