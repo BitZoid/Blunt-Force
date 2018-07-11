@@ -1,7 +1,7 @@
 -- [[ REQUIRES ]] --
-Bullet_Proto = require "modules.bullet_prototype" --AKA bulletProto
-Weapon_Proto = require "modules.weapon_prototype" --AKA weaponProto
-Enemy_Proto = require "modules.enemy_prototype" --AKA enemyProto
+require "modules.bullet_prototype" --AKA bulletProto
+require "modules.weapon_prototype" --AKA weaponProto
+require "modules.enemy_prototype" --AKA enemyProto
 
 -- [[ GLOBALS ]] --
 _SCREEN_WIDTH = tonumber(sys.get_config("display.width"))
@@ -21,10 +21,14 @@ _WeaponAngleQuat = 0
 _PlayerHealthMax = 10
 _PlayerHealth = _PlayerHealthMax
 _PlayerScore = 0
+_EnemyTable = {}
 
 
 
 function init(self)
+	_EnemyTable = json.decode(sys.load_resource("/data/enemyTypes.json"))
+	print(_EnemyTable.enemies[1])
+	enemyProto.createEnemy(go.get_position("/hero_collection/hero"), _EnemyTable.enemies[1])
 	msg.post(".", "acquire_input_focus")
 	msg.post("/camera#camera", "acquire_camera_focus")
 	_HeroPos = go.get_position("/hero_collection/hero")
@@ -57,7 +61,7 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("damageHero") then
+	if message_id == _DamageHeroHash then
 		_PlayerHealth = _PlayerHealth - message.damage
 	end	
 end
@@ -69,17 +73,17 @@ function on_input(self, action_id, action)
 		return
 		
 	--Movement Control Axes
-	elseif action_id == hash("up") then
+	elseif action_id == _UpHash then
 		_ControlAxisVert = 1
-	elseif action_id == hash("down") then
+	elseif action_id == _DownHash then
 		if _ControlAxisVert == 1 then
 			_ControlAxisVert = 0
 		else
 			_ControlAxisVert = -1
 		end
-	elseif action_id == hash("right") then
+	elseif action_id == _RightHash then
 		_ControlAxisHor = 1
-	elseif action_id == hash("left") then
+	elseif action_id == _LeftHash then
 		if _ControlAxisHor == 1 then
 			_ControlAxisHor = 0
 		else
@@ -87,7 +91,7 @@ function on_input(self, action_id, action)
 		end
 
 	
-	elseif action_id ==  hash("mouse1") then
+	elseif action_id == _Mouse1Hash then
 		_Attack = true
 	end
 end

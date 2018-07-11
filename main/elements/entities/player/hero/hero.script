@@ -6,7 +6,6 @@ local collisions = {}
 local curAnim = 1
 local angleQuat = 0
 local swingDist = 50
-local collision_hash = hash("contact_point_response")
 local weaponPosOffset = vmath.vector3(0, -5, 0)
 heroCollisionVector = vmath.vector3()
 
@@ -24,12 +23,12 @@ end
 function update(self, dt)
 	if math.abs(heroVelocity.x) + math.abs(heroVelocity.y) > 20 then
 		if curAnim ~= 1 then
-			msg.post("#sprite", "play_animation", {id = hash("run_left")})
+			msg.post("#sprite", "play_animation", {id = _RunHash})
 			curAnim = 1
 		end
 	else
 		if curAnim ~= 2 then
-			msg.post("#sprite", "play_animation", {id = hash("idle_left")})
+			msg.post("#sprite", "play_animation", {id = _IdleHash})
 			curAnim = 2	
 		end
 	end
@@ -135,8 +134,8 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == collision_hash then
-		if message.group == hash('walls') then
+	if message_id == _ContactPointHash then
+		if message.group == _WallsHash then
 			if (message.distance * message.normal.x > heroCollisionVector.x and heroCollisionVector.x >= 0)  or
 			(message.distance * message.normal.x < heroCollisionVector.x and heroCollisionVector.x <= 0) then
 				heroCollisionVector.x = message.normal.x * message.distance
@@ -146,10 +145,6 @@ function on_message(self, message_id, message, sender)
 				heroCollisionVector.y = message.normal.y * message.distance
 			end
 		end 
-	end
-	if message_id == hash("offset") then
-		angleQuat = message.angleQuat
-		angleRad = message.angleRad
 	end
 end
 

@@ -29,5 +29,5 @@ bulletProto.changeCallback = function(callback, callback_id)
 end
 
 bulletProto.bulletTypes = {
-	bullet_1 = "/bullet_1_factory#factory",
+	"/bullet_1_factory#factory",
 }
