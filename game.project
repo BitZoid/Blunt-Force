@@ -1,6 +1,6 @@
 [project]
 title = Shovel Prototype
-version = 0.2
+version = 0.02
 compress_archive = 1
 dependencies = https://github.com/subsoap/defos/archive/master.zip
 write_log = 0

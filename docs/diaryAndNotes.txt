@@ -45,5 +45,16 @@
 	to-do: make a forum post?
 			clean up code
 			start menu, pause menu
+
+7/11/2018
+	Working in library, 11-5:30
+	listening: spotify snails house
+	Improved upon enemy structuring and properties;
+		made it possible to create an enemy, and create new enemies
+		need to add a way of setting the enemy sprites/animations on generation
+	Need to flesh out to roadmap a lot more, versions should be advancing slower.
+		goal for v.1: playable, with levels, menus, death, and textures
+	enemies and bullets should be much bigger - hard to reflect bullets at a small moving enemy - should be big enough to hit an enemy fairly easily
 	
+
 	
