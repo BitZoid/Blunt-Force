@@ -3,12 +3,12 @@
 		{
 			"Health":15
 			"PointValue":101
-			"Speed": 500
+			"Speed": 100
 			"Range": 400
 			"ShootingPatternID": 2
-			"BulletType": 1
 			"IdleBehaviorsID" : 1
 			"TrackingBehaviorsID" : 1
+			"BulletType": 1
 		}
 	]
 }

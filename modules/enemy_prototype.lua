@@ -1,3 +1,8 @@
+require "modules.idle_behaviors" 
+require "modules.tracking_behaviors" 
+require "modules.shooting_behaviors" 
+
+
 -- Functions used in enemy AI
 enemyProto = {}
 
@@ -41,96 +46,8 @@ enemyProto.createEnemy = function(location, properties)
 	factory.create("/enemyFactory#factory", location, nil, properties)
 end
 
-_IdleBehaviors = {}
-_TrackingBehaviors = {}
-_ShootingPatterns = {}
 
-_ShootingPatterns[1] = function(bulletURL, obj) --machinegun
-	enemyProto.delay(.1, "waitS", function()
-		bulletProto.newBullet(bulletURL, 
-		go.get(".", "position"), 
-		enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), -3, 3), 
-		200 + enemyProto.randomFloat(-20, 20), .5, 1,
-		function()
-			bulletProto.newBullet(bulletURL,  
-			go.get(".", "position"), 
-			enemyProto.derivativeDirection(enemyProto.randomDirection(), -100, 100),
-			200 + enemyProto.randomFloat(-20, 20), 1, 2,
-			function()
-			end)
-		end)
-		obj.shooting = false
-	end)
-end
 
-_ShootingPatterns[2] = function(bulletURL, obj) --shotgun
-	enemyProto.delay(.1, "waitS", function()
-		bulletProto.newBullet(bulletURL, 
-		go.get(".", "position"), 
-		enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), -1, 1), 
-		200 + enemyProto.randomFloat(-20, 20), .5, 1)
-		bulletProto.newBullet(bulletURL, 
-		go.get(".", "position"), 
-		enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), -22, -21), 
-		200 + enemyProto.randomFloat(-20, 20), .5, 1)
-		bulletProto.newBullet(bulletURL, 
-		go.get(".", "position"), 
-		enemyProto.derivativeDirection(enemyProto.target(go.get("/hero_collection/hero", "position")), 21, 22), 
-		200 + enemyProto.randomFloat(-20, 20), .5, 1)
-		obj.shooting = false
-	end)
-end
-
-_IdleBehaviors[1] = {
-	{
-		directionMode = 1,
-		speedMultiplier = 1,
-		minSpeedMultiplier = 0,
-		durationLower = 1,
-		durationUpper = 2,
-		completionDelayLower = 5,
-		completionDelayUpper = 10
-	},
-	{
-		directionMode = 1,
-		speedMultiplier = 1.2,
-		minSpeedMultiplier = 0.2,
-		durationLower = .5,
-		durationUpper = 2.5,
-		completionDelayLower = 2,
-		completionDelayUpper = 3
-	},
-	{
-		directionMode = 0,
-		speedMultiplier = .8,
-		minSpeedMultiplier = .3,
-		durationLower = 1,
-		durationUpper = 5,
-		completionDelayLower = 0,
-		completionDelayUpper = 4
-	},
-	{
-		directionMode = 0,
-		speedMultiplier = 0,
-		minSpeedMultiplier = 0,
-		durationLower = 3,
-		durationUpper = 5,
-		completionDelayLower = 0,
-		completionDelayUpper = 0
-	}
-}
-
-_TrackingBehaviors[1] = {
-	{
-		directionMode = 2,
-		speedMultiplier = 1,
-		minSpeedMultiplier = 1,
-		durationLower = 1,
-		durationUpper = 2,
-		completionDelayLower = 0,
-		completionDelayUpper = 0
-	}
-}
 
 _BulletCallbacks = {
 
