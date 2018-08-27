@@ -5,7 +5,7 @@
 			"PointValue":101
 			"Speed": 100
 			"Range": 400
-			"ShootingPatternID": 2
+			"ShootingPatternID": 3
 			"IdleBehaviorsID" : 1
 			"TrackingBehaviorsID" : 1
 			"BulletType": 1

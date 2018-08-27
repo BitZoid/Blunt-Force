@@ -1,27 +1,8 @@
 name: "default"
 instances {
-  id: "attack_spawner"
-  prototype: "/main/elements/entities/player/weapon/shovel/attack_spawner.go"
-  position {
-    x: 10.594259
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
   id: "hero"
   prototype: "/main/elements/entities/player/hero/hero.go"
+  children: "attack_spawner"
   position {
     x: 0.0
     y: 0.0
@@ -40,6 +21,26 @@ instances {
       value: "250.0"
       type: PROPERTY_TYPE_NUMBER
     }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "attack_spawner"
+  prototype: "/main/elements/entities/player/weapon/shovel/attack_spawner.go"
+  position {
+    x: 10.594259
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
   }
   scale3 {
     x: 1.0

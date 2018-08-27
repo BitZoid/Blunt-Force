@@ -63,6 +63,9 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == _DamageHeroHash then
 		_PlayerHealth = _PlayerHealth - message.damage
+		if _PlayerHealth < 0 then
+			_PlayerHealth = 0
+		end
 	end	
 end
 
@@ -97,5 +100,6 @@ function on_input(self, action_id, action)
 end
 
 function game_over()
-	go.delete("/hero_collection/hero")
+	go.delete("/hero_collection/hero", true)
+	go.delete("/hero_collection/weapon", true)
 end
