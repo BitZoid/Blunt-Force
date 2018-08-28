@@ -5,7 +5,15 @@ tile_margin: 0
 tile_spacing: 0
 collision: ""
 material_tag: "tile"
-collision_groups: "default"
+animations {
+  id: "bullet_1_default"
+  start_tile: 21
+  end_tile: 21
+  playback: PLAYBACK_NONE
+  fps: 30
+  flip_horizontal: 0
+  flip_vertical: 0
+}
 animations {
   id: "shrub"
   start_tile: 1
