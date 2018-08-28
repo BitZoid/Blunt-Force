@@ -43,7 +43,7 @@ end
 enemyProto.flip = function(velocity)		if velocity.x < 0 then sprite.set_hflip("#sprite", true)  elseif velocity.x > 0 then  sprite.set_hflip("#sprite", false)  end			end
 
 enemyProto.createEnemy = function(location, properties)
-	factory.create("/enemyFactory#factory", location, nil, properties)
+	return factory.create("/enemyFactory#factory", location, nil, properties)
 end
 
 
