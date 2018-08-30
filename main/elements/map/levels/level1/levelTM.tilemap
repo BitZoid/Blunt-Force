@@ -1,4 +1,4 @@
-tile_set: "/main/elements/map/levels/level1/level1.tilesource"
+tile_set: "/data/spritesheets/spritesheet.tilesource"
 layers {
   id: "layer1"
   z: 0.0

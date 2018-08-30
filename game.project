@@ -31,6 +31,6 @@ debug_alpha = .9
 shared_state = 1
 
 [graphics]
-default_texture_mag_filter = nearest
-default_texture_min_filter = nearest
+default_texture_mag_filter = linear
+default_texture_min_filter = linear
 

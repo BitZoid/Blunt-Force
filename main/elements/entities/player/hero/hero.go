@@ -114,7 +114,7 @@ embedded_components {
   id: "sprite"
   type: "sprite"
   data: "tile_set: \"/main/elements/entities/player/hero/images/hero_anim.tilesource\"\n"
-  "default_animation: \"idle_left\"\n"
+  "default_animation: \"run_right\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""

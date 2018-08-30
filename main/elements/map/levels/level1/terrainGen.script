@@ -1,5 +1,6 @@
 
 Map = {}
+_EmptyTiles = {}
 local MapWidth = 40  	--Seem to be
 local MapHeight = 40	--	reversed?
 local PercentAreWalls = 47
@@ -237,9 +238,10 @@ function init(self)
 	for row = 1, MapHeight do
 		for col = 1, MapWidth do
 			if Map[row][col] == 1 then
-				tilemap.set_tile("main:/level#tilemap", "layer1", row, col, 1)
+				tilemap.set_tile("main:/level#tilemap", "layer1", row, col, math.random(81,87))
+				table.insert(_EmptyTiles, {row,col})
 			else
-				tilemap.set_tile("main:/level#tilemap", "layer1", row, col, 2)
+				tilemap.set_tile("main:/level#tilemap", "layer1", row, col, 88)
 			end
 		end
 	end
